@@ -8,11 +8,11 @@ model  = load(open('./app/models/model.pkl', 'rb'))
 def predict(sequences, smiles):
     seq_ftr = tf_prt.transform(sequences).todense()
     sml_ftr = tf_lig.transform(smiles).todense()
-    Z = np.zeros((len(sequences) * len(smiles), 200))
+    Z = np.zeros((len(sequences) * len(smiles), seq_ftr.shape[1]+sml_ftr.shape[1]))
     for i in range(len(sequences)):
         for j in range(len(smiles)):
-            Z[len(smiles)*i+j,:100] = seq_ftr[i,:]
-            Z[len(smiles)*i+j,100:] = sml_ftr[j,:]
+            Z[len(smiles)*i+j,:seq_ftr.shape[1]] = seq_ftr[i,:]
+            Z[len(smiles)*i+j,seq_ftr.shape[1]:] = sml_ftr[j,:]
     predictions = model.predict_proba(Z)[:,1]
     P = np.zeros((len(sequences), len(smiles)))
     for i in range(len(sequences)):
